@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>LangGraph Test</h1>
+
+    <form method="POST">
+        <input name="user_input">
+        <button type="submit">Send</button>
+    </form>
+
+    {% if response %}
+        <p>Agent: {{ response }}</p>
+    {% endif %}
+</body>
+</html>
