@@ -66,10 +66,16 @@
             <button type="submit">Run Agent</button>
         </form>
 
-        {% if result %}
+        {% if actions %}
             <h3>Parsed Actions:</h3>
-            <pre>{{ result }}</pre>
+            <pre>{{ actions }}</pre>
         {% endif %}
+
+        {% if result %}
+           <h3>Agent Response:</h3>
+           <pre>{{ result }}</pre>
+        {% endif %}
+
     </div>
 </body>
 </html>
