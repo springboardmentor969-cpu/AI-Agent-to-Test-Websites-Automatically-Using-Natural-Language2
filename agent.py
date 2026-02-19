@@ -7,7 +7,7 @@ import google.generativeai as genai
 import os
 
 # Configure Gemini API
-genai.configure(api_key=os.getenv("AIzaSyAkefwVFNPvUDCc3IWGIFtlA73Rlw7z1P0"))
+genai.configure(api_key=os.getenv("AIzaSyAkefwVFNPvUDCc3ItlA73Rlw7z1P0"))
 llm = genai.GenerativeModel("gemini-2.5-flash")
 
 class AgentState(TypedDict):
