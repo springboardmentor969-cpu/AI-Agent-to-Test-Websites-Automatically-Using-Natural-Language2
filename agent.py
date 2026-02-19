@@ -3,10 +3,12 @@ load_dotenv()
 
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
-from langchain_openai import ChatOpenAI
+import google.generativeai as genai
+import os
 
-# Create model
-llm = ChatOpenAI(model="gpt-4o-mini")
+# Configure Gemini API
+genai.configure(api_key=os.getenv("AIzaSyAkefwVFNPvUDCc3IWGIFtlA73Rlw7z1P0"))
+llm = genai.GenerativeModel("gemini-2.5-flash")
 
 class AgentState(TypedDict):
     input: str
@@ -15,10 +17,10 @@ class AgentState(TypedDict):
 def agent_node(state: AgentState):
     user_input = state["input"]
 
-    # Call OpenAI model
-    response = llm.invoke(user_input)
+    # Call Gemini model
+    response = llm.generate_content(user_input)
 
-    return {"output": response.content}
+    return {"output": response.text}
 
 builder = StateGraph(AgentState)
 builder.add_node("agent", agent_node)
