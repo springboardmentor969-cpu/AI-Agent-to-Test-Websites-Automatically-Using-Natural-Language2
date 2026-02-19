@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Web Testing Agent</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 500px;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      background: #eee;
+      padding: 10px;
+      white-space: pre-wrap;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>AI Web Testing Agent</h1>
+
+    <form id="testForm">
+      <input
+        type="text"
+        id="instruction"
+        placeholder="Enter test instruction (e.g. click login)"
+        required
+      />
+      <button type="submit">Submit</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById("testForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const instruction = document.getElementById("instruction").value;
+
+      const response = await fetch("/submit-test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ instruction: instruction })
+      });
+
+      const data = await response.json();
+
+      console.log("Instruction sent successfully");
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+      resultDiv.textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
