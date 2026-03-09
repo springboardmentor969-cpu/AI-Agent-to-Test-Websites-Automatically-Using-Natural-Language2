@@ -1,24 +1,18 @@
-from flask import Flask, request
-from workflow import graph
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def home():
+    return render_template("index.html")
 
-    if request.method == "POST":
-        instruction = request.form["instruction"]
+@app.route("/process", methods=["POST"])
+def process():
+    user_input = request.form["testcase"]
+    
+    print("User Test Case:", user_input)
+    
+    return f"AI Agent Received: {user_input}"
 
-        result = graph.invoke({"instruction": instruction})
-
-        return f"<h3>Generated Actions:</h3><p>{result}</p>"
-
-    return '''
-    <h2>Enter Test Instructions</h2>
-    <form method="post">
-        <textarea name="instruction" rows="6" cols="40"></textarea><br><br>
-        <button type="submit">Submit</button>
-    </form>
-    '''
-
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
