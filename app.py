@@ -1,28 +1,41 @@
-from flask import Flask, request, jsonify, send_from_directory
-from agent.graph import agent_graph
+from flask import Flask, render_template, request
+import json
+from workflow import workflow
+from validator import validate_output
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return "AI Web Testing Agent is Running"
 
-@app.route("/test")
-def test_page():
-    return send_from_directory("static", "test_page.html")
+    json_output = None
 
-# ✅ ADD THIS HERE
-@app.route("/submit-test", methods=["POST"])
-def submit_test():
-    data = request.get_json()
-    instruction = data.get("instruction", "")
+    if request.method == "POST":
+        test_case = request.form["testcase"]
 
-    result = agent_graph.invoke({
-        "instruction": instruction,
-        "parsed_steps": []
-    })
+        result = workflow.invoke({
+            "input_text": test_case
+        })
 
-    return jsonify(result)
+        parsed = result["parsed_command"]
+        code = result["generated_code"]
+
+        output = {
+            "input_test_case": test_case,
+            "parsed_command": {
+                "action": parsed.action,
+                "target": parsed.target,
+                "value": parsed.value,
+                "expected_result": parsed.expected_result
+            },
+            "generated_code": code,
+            "validation": validate_output(code)
+        }
+
+        json_output = json.dumps(output, indent=4)
+
+    return render_template("index.html", json_output=json_output)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
