@@ -10,18 +10,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             color: white;
+            padding: 24px 0;
         }
 
         .container {
             background: rgba(0, 0, 0, 0.2);
             padding: 30px;
             border-radius: 12px;
-            width: 500px;
+            width: 560px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
         input {
@@ -48,17 +49,18 @@
 
         pre {
             text-align: left;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 10px;
             border-radius: 6px;
             overflow-x: auto;
+            white-space: pre-wrap;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h2>🤖 AI Instruction Parser</h2>
+        <h2>AI Instruction Parser</h2>
 
         <form method="post">
             <input type="text" name="instruction" placeholder="Enter instruction...">
@@ -71,11 +73,20 @@
             <pre>{{ actions }}</pre>
         {% endif %}
 
-        {% if result %}
-           <h3>Agent Response:</h3>
-           <pre>{{ result }}</pre>
+        {% if expected_result %}
+            <h3>Expected Result:</h3>
+            <pre>{{ expected_result }}</pre>
         {% endif %}
 
+        {% if result %}
+            <h3>Agent Response:</h3>
+            <pre>{{ result }}</pre>
+        {% endif %}
+
+        {% if execution_output %}
+            <h3>Execution Output:</h3>
+            <pre>{{ execution_output }}</pre>
+        {% endif %}
     </div>
 </body>
 </html>

@@ -1,0 +1,6 @@
+flask
+langgraph
+nltk
+playwright
+openai
+python-dotenv

@@ -1,9 +1,6 @@
-from agent.parser import parse_instruction
 from dataclasses import dataclass
-from agent.client import get_client
 
-# Initialize client used by this module
-client = get_client()
+from agent.workflow import run_workflow
 
 
 @dataclass
@@ -13,64 +10,25 @@ class State:
 
 
 def agent_node(state: State):
-    user_input = state.input
-
     try:
-        parsed_actions = parse_instruction(user_input)
-
-        try:
-            client_instance = client
-        except NameError:
-            return State(
-                input=user_input,
-                output="Error: 'client' is not configured. Set up an API client and assign it to the name 'client'."
-            )
-
-        response = client_instance.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"""
-You are an AI testing agent.
-
-User Instruction:
-{user_input}
-
-Parsed Actions:
-{parsed_actions}
-
-Generate a Playwright Python script that performs these actions.
-Return ONLY valid Python code. No explanations.
-"""
-                }
-            ]
-        )
-
+        result = run_workflow(state.input, execute=False)
         return State(
-            input=user_input,
-            output=response.choices[0].message.content
+            input=state.input,
+            output=result["generated_code"],
         )
-
-    except Exception as e:
+    except Exception as exc:
         return State(
-            input=user_input,
-            output=f"Error: {str(e)}"
+            input=state.input,
+            output=f"Error: {exc}",
         )
 
 
-# Lightweight adapter expected by `app.py`:
 class AgentApp:
     def invoke(self, state: State):
         result = agent_node(state)
-        if isinstance(result, State):
-            return {"input": result.input, "output": result.output}
-        if isinstance(result, dict):
-            return result
-        return {"input": getattr(state, "input", None), "output": str(result)}
+        return {"input": result.input, "output": result.output}
 
 
-# Module-level `app` for `from agent.groq_agent import app` usage
 app = AgentApp()
 
 __all__ = ["State", "agent_node", "AgentApp", "app"]

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login</title>
+</head>
+<body>
+
+<h2>Login Page</h2>
+
+<input id="username" placeholder="Username">
+<input id="password" placeholder="Password">
+
+<button id="login">Login</button>
+
+<p id="result"></p>
+
+<script>
+document.getElementById("login").onclick = function () {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+
+    if (user === "test" && pass === "1234") {
+        document.getElementById("result").innerText = "Success";
+    } else {
+        document.getElementById("result").innerText = "Failed";
+    }
+};
+</script>
+
+</body>
+</html>
