@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Test Login Page</title>
+<style>
+  body { font-family: Arial; background: #f0f4f8; display: flex; justify-content: center; padding: 60px; }
+  .form-box { background: white; padding: 40px; border-radius: 10px; width: 360px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+  h2 { margin-bottom: 24px; color: #1e293b; }
+  input { width: 100%; padding: 10px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+  button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; }
+  button:hover { background: #1d4ed8; }
+  #message { margin-top: 16px; text-align: center; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="form-box">
+  <h2>Login</h2>
+  <input type="text" name="username" placeholder="Username" id="username">
+  <input type="password" name="password" placeholder="Password" id="password">
+  <button type="button" onclick="handleLogin()">Login</button>
+  <div id="message"></div>
+</div>
+<script>
+function handleLogin() {
+  var u = document.getElementById("username").value;
+  var p = document.getElementById("password").value;
+  var msg = document.getElementById("message");
+  if (u === "admin" && p === "1234") {
+    msg.style.color = "green";
+    msg.innerText = "Login successful!";
+  } else {
+    msg.style.color = "red";
+    msg.innerText = "Invalid credentials.";
+  }
+}
+</script>
+</body>
+</html>
