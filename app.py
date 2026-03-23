@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import json
 from workflow import workflow
 from validator import validate_output
+from executor import execute_script
 
 app = Flask(__name__)
 
@@ -9,6 +10,8 @@ app = Flask(__name__)
 def home():
 
     json_output = None
+    execution_status = None
+    playwright_code = None
 
     if request.method == "POST":
         test_case = request.form["testcase"]
@@ -18,10 +21,18 @@ def home():
         })
 
         parsed = result["parsed_command"]
-        code = result["generated_code"]
+
+        # Combine code
+        code = result["playwright_code"] + "\n" + result["assertion_code"]
+
+        playwright_code = code
+
+        # Execute script
+        success, error = execute_script(code)
 
         output = {
             "input_test_case": test_case,
+            "url": result["url"],
             "parsed_command": {
                 "action": parsed.action,
                 "target": parsed.target,
@@ -29,12 +40,17 @@ def home():
                 "expected_result": parsed.expected_result
             },
             "generated_code": code,
-            "validation": validate_output(code)
+            "validation": validate_output(code),
+            "execution": success if success else error
         }
 
+        # ✅ Convert to JSON string
         json_output = json.dumps(output, indent=4)
 
-    return render_template("index.html", json_output=json_output)
+    return render_template("index.html",
+                           json_output=json_output,
+                           execution_status=execution_status,
+                           playwright_code=playwright_code)
 
 
 if __name__ == "__main__":

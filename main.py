@@ -1,29 +1,27 @@
-import json
+# main.py
+
 from workflow import workflow
-from validator import validate_output
+from executor import execute_script
 
-test_case = "Click the login button and should see dashboard"
+test_case = "Click login button and should see Example Domain"
 
-# Run LangGraph workflow
 result = workflow.invoke({
     "input_text": test_case
 })
 
-parsed = result["parsed_command"]
-code = result["generated_code"]
+playwright_code = result["playwright_code"]
+assertion_code = result["assertion_code"]
 
-# Create JSON output
-output = {
-    "input_test_case": test_case,
-    "parsed_command": {
-        "action": parsed.action,
-        "target": parsed.target,
-        "value": parsed.value,
-        "expected_result": parsed.expected_result
-    },
-    "generated_code": code,
-    "validation": validate_output(code)
-}
+# Combine both
+final_script = f"""
+{playwright_code}
+{assertion_code}
+"""
 
-# Print JSON output
-print(json.dumps(output, indent=4))
+print("Generated Script:\n", final_script)
+
+# Execute script
+output, error = execute_script(final_script)
+
+print("\nExecution Output:", output)
+print("Error:", error)
