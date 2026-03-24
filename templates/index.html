@@ -1,15 +1,366 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Test Automation Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface-2: #232736;
+            --border: #2e3347;
+            --text: #e4e6f0;
+            --text-muted: #8b8fa8;
+            --accent: #6c63ff;
+            --accent-glow: rgba(108, 99, 255, .25);
+            --green: #34d399;
+            --red: #f87171;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ── Header ───────────────────────────── */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6c63ff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: .4rem;
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: .88rem;
+        }
+
+        /* ── Input Card ───────────────────────── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-title {
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            margin-bottom: .75rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: .85rem 1rem;
+            font-family: inherit;
+            font-size: .92rem;
+            color: var(--text);
+            resize: vertical;
+            outline: none;
+            transition: border .2s;
+        }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        textarea::placeholder { color: var(--text-muted); }
+
+        /* ── Buttons ──────────────────────────── */
+        .btn-row {
+            display: flex;
+            gap: .75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: .65rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: .88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform .12s, box-shadow .2s, opacity .2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6c63ff, #7c3aed);
+            color: #fff;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        /* ── Loader ───────────────────────────── */
+        .loader-wrap {
+            display: none;
+            align-items: center;
+            gap: .6rem;
+            margin-top: 1rem;
+            color: var(--text-muted);
+            font-size: .85rem;
+        }
+        .loader-wrap.active { display: flex; }
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Result Section ───────────────────── */
+        #results { display: none; }
+        #results.visible { display: block; }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .4rem 1rem;
+            border-radius: 20px;
+            font-size: .82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .status-badge.pass { background: rgba(52,211,153,.12); color: var(--green); border: 1px solid rgba(52,211,153,.25); }
+        .status-badge.fail { background: rgba(248,113,113,.12); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
+        .status-badge .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+        }
+        .status-badge.pass .dot { background: var(--green); }
+        .status-badge.fail .dot { background: var(--red); }
+
+        .result-meta {
+            font-size: .82rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .result-meta strong { color: var(--text); }
+
+        pre {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: .8rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #c4c7d5;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 1;
+        }
+        .tab-btn {
+            padding: .55rem 1.1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active {
+            background: var(--surface-2);
+            color: var(--accent);
+            border-color: var(--border);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── Error Box ────────────────────────── */
+        .error-box {
+            background: rgba(248,113,113,.08);
+            border: 1px solid rgba(248,113,113,.25);
+            border-radius: 8px;
+            padding: .85rem 1rem;
+            color: var(--red);
+            font-size: .85rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Footer ───────────────────────────── */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: .75rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
 <body>
-    <h1>LangGraph Test</h1>
 
-    <form method="POST">
-        <input name="user_input">
-        <button type="submit">Send</button>
-    </form>
+<div class="container">
 
-    {% if response %}
-        <p>Agent: {{ response }}</p>
-    {% endif %}
+    <header>
+        <h1>🤖 AI Test Automation Agent</h1>
+        <p>Enter a natural language test instruction — the agent will parse, generate Playwright code, and execute it.</p>
+    </header>
+
+    <!-- Input -->
+    <div class="card">
+        <div class="card-title">Test Instruction</div>
+        <textarea id="instruction" placeholder="e.g. Go to YouTube and search for lofi music&#10;e.g. Open localhost:5000/sample, type admin as username and password123 as password, click login"></textarea>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-run" onclick="runTest()">▶ Run Test</button>
+            <button class="btn btn-secondary" id="btn-clear" onclick="clearAll()">Clear</button>
+        </div>
+        <div class="loader-wrap" id="loader">
+            <div class="spinner"></div>
+            <span>Executing test… this may take a moment</span>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results">
+        <div class="card">
+            <div class="card-title">Result</div>
+            <div id="status-badge"></div>
+            <div id="result-meta" class="result-meta"></div>
+            <div id="error-box" class="error-box" style="display:none"></div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('actions')">Parsed Actions</button>
+                <button class="tab-btn" onclick="switchTab('code')">Generated Code</button>
+            </div>
+            <div id="tab-actions" class="tab-content active">
+                <pre id="pre-actions"></pre>
+            </div>
+            <div id="tab-code" class="tab-content">
+                <pre id="pre-code"></pre>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        AI Test Automation Agent &middot; Powered by Gemini + LangGraph + Playwright &middot;
+        <a href="/sample">Sample Login Page</a>
+    </footer>
+
+</div>
+
+<script>
+function runTest() {
+    const input = document.getElementById('instruction').value.trim();
+    if (!input) return alert('Please enter a test instruction.');
+
+    const btn = document.getElementById('btn-run');
+    const loader = document.getElementById('loader');
+    const results = document.getElementById('results');
+
+    btn.disabled = true;
+    loader.classList.add('active');
+    results.classList.remove('visible');
+
+    const formData = new FormData();
+    formData.append('user_input', input);
+
+    fetch('/', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        loader.classList.remove('active');
+
+        if (data.error) {
+            results.classList.add('visible');
+            document.getElementById('status-badge').innerHTML =
+                '<span class="status-badge fail"><span class="dot"></span>ERROR</span>';
+            document.getElementById('result-meta').innerHTML = '';
+            document.getElementById('error-box').style.display = 'block';
+            document.getElementById('error-box').textContent = data.error;
+            document.getElementById('pre-actions').textContent = '';
+            document.getElementById('pre-code').textContent = '';
+            return;
+        }
+
+        results.classList.add('visible');
+        document.getElementById('error-box').style.display = 'none';
+
+        const exec = data.execution_result || {};
+        const isPASS = exec.status === 'PASS';
+
+        document.getElementById('status-badge').innerHTML =
+            `<span class="status-badge ${isPASS ? 'pass' : 'fail'}">` +
+            `<span class="dot"></span>${exec.status || 'N/A'}</span>`;
+
+        document.getElementById('result-meta').innerHTML =
+            `<strong>Steps executed:</strong> ${exec.steps_executed || 0}` +
+            (exec.error ? ` &middot; <strong>Error:</strong> ${exec.error}` : '');
+
+        document.getElementById('pre-actions').textContent =
+            JSON.stringify(data.parsed_actions || [], null, 2);
+
+        document.getElementById('pre-code').textContent =
+            data.generated_code || '(no code generated)';
+
+        switchTab('actions');
+    })
+    .catch(err => {
+        btn.disabled = false;
+        loader.classList.remove('active');
+        alert('Request failed: ' + err.message);
+    });
+}
+
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    
+    // Add active class to corresponding tab button
+    const activeBtn = document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+}
+
+function clearAll() {
+    document.getElementById('instruction').value = '';
+    document.getElementById('results').classList.remove('visible');
+}
+</script>
+
 </body>
 </html>

@@ -7,7 +7,7 @@ import google.generativeai as genai
 import os
 
 # Configure Gemini API
-genai.configure(api_key=os.getenv(""))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 llm = genai.GenerativeModel("gemini-2.5-flash")
 
 class AgentState(TypedDict):
@@ -15,7 +15,7 @@ class AgentState(TypedDict):
     output: str
 
 def agent_node(state: AgentState):
-    user_input = state["input"]
+    user_input = state["input"]f
 
     # Call Gemini model
     response = llm.generate_content(user_input)
