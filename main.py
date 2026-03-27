@@ -1,19 +1,21 @@
-from workflow import graph
+from parser import parse_instruction
+from code_generator import generate_code
+from executor import run_test
 
-print("Enter your test instructions (press Enter after each step).")
-print("Type DONE when finished.\n")
+if __name__ == "__main__":
 
-lines = []
+    instruction = input("Enter instruction: ")
 
-while True:
-    line = input()
-    if line.upper() == "DONE":
-        break
-    lines.append(line)
+    actions = parse_instruction(instruction)
 
-instruction = "\n".join(lines)
+    code = generate_code(actions)
 
-result = graph.invoke({"instruction": instruction})
+    print("\nGenerated Code:\n")
+    print(code)
 
-print("\nParsed Actions:")
-print(result)
+    print("\nRunning...\n")
+
+    result, error = run_test(code)
+
+    print("Result:", result)
+    print("Error:", error)

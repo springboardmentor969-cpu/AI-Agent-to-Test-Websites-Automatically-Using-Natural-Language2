@@ -1,23 +1,14 @@
-def parse_instruction(instruction):
-
-    steps = instruction.lower().split("\n")
-
+def parse_instruction(text):
     actions = []
+    text = text.lower()
 
-    for step in steps:
+    if "youtube" in text:
+        actions.append({"action": "open", "platform": "youtube"})
+    elif "amazon" in text:
+        actions.append({"action": "open", "platform": "amazon"})
 
-        if "open" in step:
-            actions.append({"action":"open_url","value":step})
-
-        elif "enter username" in step:
-            value = step.replace("enter username","").strip()
-            actions.append({"action":"type","field":"username","value":value})
-
-        elif "enter password" in step:
-            value = step.replace("enter password","").strip()
-            actions.append({"action":"type","field":"password","value":value})
-
-        elif "click" in step:
-            actions.append({"action":"click","target":step})
+    if "search" in text:
+        query = text.split("search")[-1].strip()
+        actions.append({"action": "search", "query": query})
 
     return actions
