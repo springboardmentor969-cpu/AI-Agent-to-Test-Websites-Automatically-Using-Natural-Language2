@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>AI Test Automation Generator</title>
+
+<style>
+
+body{
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#667eea,#764ba2);
+margin:0;
+padding:40px;
+display:flex;
+justify-content:center;
+}
+
+.container{
+background:white;
+padding:40px;
+border-radius:12px;
+width:70%;
+box-shadow:0 12px 30px rgba(0,0,0,0.2);
+}
+
+h1{text-align:center;}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:30px;
+}
+
+.input-section{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:25px;
+}
+
+input{
+width:60%;
+padding:12px;
+font-size:16px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+background:#007BFF;
+border:none;
+color:white;
+padding:12px 18px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{background:#0056b3;}
+
+.secondary{background:#6c757d;}
+
+.json-box{
+background:#1e1e1e;
+padding:20px;
+border-radius:8px;
+font-family:monospace;
+font-size:14px;
+overflow:auto;
+max-height:400px;
+color:#00ff9c;
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI Test Automation Generator</h1>
+
+<div class="subtitle">
+Workflow: User Instruction → Parser → Code Generator → Validator → JSON Output
+</div>
+
+<div class="input-section">
+
+<input id="userInput" placeholder="Example: open google and search python tutorial">
+
+<button onclick="runAgent()">Generate</button>
+
+<button class="secondary" onclick="clearInput()">Clear</button>
+
+</div>
+
+<div class="json-box" id="jsonBox">
+
+<pre id="output"></pre>
+
+</div>
+
+</div>
+
+<script>
+
+function runAgent(){
+
+const input=document.getElementById("userInput").value
+
+fetch("/run",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({user_input:input})
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("jsonBox").style.display="block"
+
+document.getElementById("output").innerText=
+JSON.stringify(data,null,2)
+
+})
+
+}
+
+function clearInput(){
+
+document.getElementById("userInput").value=""
+
+document.getElementById("jsonBox").style.display="none"
+
+}
+
+</script>
+
+</body>
+</html>
