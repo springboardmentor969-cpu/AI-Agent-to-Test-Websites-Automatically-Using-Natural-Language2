@@ -67,7 +67,13 @@ def executor_node(state: AgentState) -> dict:
 
     print(f"[Workflow] Executing {len(actions)} actions (headless={headless})")
     result = execute_actions(actions, headless=headless)
-    print(f"[Workflow] Result: {result['status']} ({result['steps_executed']} steps)")
+    
+    summary = result.get("summary", {})
+    passed = summary.get("passed", 0)
+    failed = summary.get("failed", 0)
+    overall_status = "PASS" if failed == 0 and passed > 0 else "FAIL"
+    
+    print(f"[Workflow] Result: {overall_status} ({passed} passed, {failed} failed)")
     return {"execution_result": result}
 
 

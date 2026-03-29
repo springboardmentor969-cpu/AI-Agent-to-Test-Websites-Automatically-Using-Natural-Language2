@@ -85,11 +85,16 @@ def run_test(actions_json: dict) -> dict:
     headless = not requires_headed
     result = execute_actions(actions, headless=headless)
 
+    summary = result.get("summary", {})
+    passed = summary.get("passed", 0)
+    failed = summary.get("failed", 0)
+    total = summary.get("total", 0)
+    overall_status = "PASS" if failed == 0 and passed > 0 else "FAIL"
+
     print(f"\n{'=' * 60}")
-    print(f"TEST RESULT: {result['status']}")
-    print(f"Steps executed: {result['steps_executed']}")
-    if result["error"]:
-        print(f"Error: {result['error']}")
+    print(f"TEST RESULT: {overall_status}")
+    print(f"Steps executed: {total} ({passed} passed, {failed} failed)")
+    print(f"Time: {summary.get('execution_time', '0s')}")
     print(f"{'=' * 60}")
 
     return result

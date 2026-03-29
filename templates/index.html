@@ -4,232 +4,331 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Test Automation Agent</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #0f1117;
-            --surface: #1a1d27;
-            --surface-2: #232736;
-            --border: #2e3347;
-            --text: #e4e6f0;
-            --text-muted: #8b8fa8;
-            --accent: #6c63ff;
-            --accent-glow: rgba(108, 99, 255, .25);
-            --green: #34d399;
-            --red: #f87171;
-            --radius: 12px;
+            --bg: #090a0f;
+            --surface: rgba(26, 29, 39, 0.7);
+            --surface-hover: rgba(35, 39, 54, 0.85);
+            --surface-2: rgba(35, 39, 54, 0.6);
+            --border: rgba(46, 51, 71, 0.8);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #8b5cf6;
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.2);
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.2);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --font-family: 'Outfit', system-ui, sans-serif;
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: var(--bg);
+            font-family: var(--font-family);
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 40%);
+            background-attachment: fixed;
             color: var(--text);
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 3rem 1.5rem;
+            line-height: 1.5;
         }
 
         .container {
-            max-width: 960px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         /* ── Header ───────────────────────────── */
         header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
         }
         header h1 {
-            font-size: 1.75rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #6c63ff, #a78bfa);
+            background: linear-gradient(135deg, #a78bfa, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: .4rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
         }
         header p {
             color: var(--text-muted);
-            font-size: .88rem;
+            font-size: 1.05rem;
+            font-weight: 300;
         }
 
-        /* ── Input Card ───────────────────────── */
+        /* ── Cards (Glassmorphism) ────────────── */
         .card {
             background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        .card:hover { box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3); }
+
         .card-title {
-            font-size: .8rem;
+            font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: .08em;
+            letter-spacing: 0.1em;
             color: var(--text-muted);
-            margin-bottom: .75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-glow);
         }
 
+        /* ── Inputs ───────────────────────────── */
         textarea {
             width: 100%;
-            min-height: 100px;
-            background: var(--surface-2);
+            min-height: 120px;
+            background: rgba(15, 17, 23, 0.6);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: .85rem 1rem;
+            border-radius: var(--radius-md);
+            padding: 1rem;
             font-family: inherit;
-            font-size: .92rem;
+            font-size: 1rem;
             color: var(--text);
             resize: vertical;
             outline: none;
-            transition: border .2s;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
-        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-        textarea::placeholder { color: var(--text-muted); }
+        textarea:focus { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 0 3px var(--accent-glow), inset 0 2px 4px rgba(0,0,0,0.1); 
+            background: rgba(15, 17, 23, 0.8);
+        }
+        textarea::placeholder { color: rgba(148, 163, 184, 0.5); font-weight: 300; }
 
         /* ── Buttons ──────────────────────────── */
         .btn-row {
             display: flex;
-            gap: .75rem;
-            margin-top: 1rem;
+            gap: 1rem;
+            margin-top: 1.5rem;
             flex-wrap: wrap;
         }
         .btn {
-            padding: .65rem 1.5rem;
+            padding: 0.8rem 1.8rem;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             font-family: inherit;
-            font-size: .88rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform .12s, box-shadow .2s, opacity .2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        .btn:hover { transform: translateY(-1px); }
-        .btn:active { transform: translateY(0); }
-        .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6c63ff, #7c3aed);
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
             color: #fff;
-            box-shadow: 0 4px 16px var(--accent-glow);
+            box-shadow: 0 4px 15px var(--accent-glow);
         }
+        .btn-primary:not(:disabled):hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6); 
+        }
+        .btn-primary:not(:disabled):active { transform: translateY(0); }
+
         .btn-secondary {
-            background: var(--surface-2);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text);
             border: 1px solid var(--border);
         }
+        .btn-secondary:not(:disabled):hover { background: rgba(255, 255, 255, 0.1); }
 
         /* ── Loader ───────────────────────────── */
         .loader-wrap {
             display: none;
             align-items: center;
-            gap: .6rem;
-            margin-top: 1rem;
-            color: var(--text-muted);
-            font-size: .85rem;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            color: var(--accent);
+            font-size: 0.95rem;
+            font-weight: 500;
+            animation: pulse 2s infinite;
         }
         .loader-wrap.active { display: flex; }
         .spinner {
-            width: 18px; height: 18px;
-            border: 2px solid var(--border);
+            width: 20px; height: 20px;
+            border: 3px solid rgba(139, 92, 246, 0.3);
             border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin .7s linear infinite;
+            animation: spin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Result Section ───────────────────── */
-        #results { display: none; }
-        #results.visible { display: block; }
+        /* ── Results Summary ──────────────────── */
+        #results-container { display: none; margin-top: 2rem; animation: slideUp 0.5s ease-out; }
+        #results-container.visible { display: block; }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: .4rem;
-            padding: .4rem 1rem;
-            border-radius: 20px;
-            font-size: .82rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
-        .status-badge.pass { background: rgba(52,211,153,.12); color: var(--green); border: 1px solid rgba(52,211,153,.25); }
-        .status-badge.fail { background: rgba(248,113,113,.12); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
-        .status-badge .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-        }
-        .status-badge.pass .dot { background: var(--green); }
-        .status-badge.fail .dot { background: var(--red); }
-
-        .result-meta {
-            font-size: .82rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-        .result-meta strong { color: var(--text); }
-
-        pre {
-            background: var(--surface-2);
+        .stat-box {
+            background: rgba(15, 17, 23, 0.5);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1rem;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        .stat-box:hover { transform: translateY(-2px); background: rgba(15, 17, 23, 0.8); }
+        .stat-value { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+        
+        .stat-pass .stat-value { color: var(--green); text-shadow: 0 0 10px var(--green-glow); }
+        .stat-fail .stat-value { color: var(--red); text-shadow: 0 0 10px var(--red-glow); }
+        .stat-total .stat-value { color: var(--text); }
+        .stat-time .stat-value { color: var(--accent); }
+
+        /* ── Step-by-Step Report ──────────────── */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+            margin-top: 1rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 8px;
+            width: 2px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+        .step-item {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        .step-item::before {
+            content: '';
+            position: absolute;
+            left: -16px; top: 6px;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 2px solid var(--border);
+            z-index: 2;
+        }
+        .step-item.pass::before { background: var(--green); border-color: rgba(16,185,129,0.3); box-shadow: 0 0 10px var(--green-glow); }
+        .step-item.fail::before { background: var(--red); border-color: rgba(239,68,68,0.3); box-shadow: 0 0 10px var(--red-glow); }
+
+        .step-content {
+            background: rgba(15, 17, 23, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             padding: 1rem;
-            font-size: .8rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            color: #c4c7d5;
+            transition: all 0.2s ease;
+        }
+        .step-item:hover .step-content { background: rgba(15, 17, 23, 0.7); border-color: rgba(255,255,255,0.1); }
+        
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .step-action {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            word-break: break-all;
+        }
+        .step-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            background: rgba(255,255,255,0.05);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+        }
+        .step-error {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-sm);
+            color: #fca5a5;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        /* ── Tabs for Raw Data ────────────────── */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0px;
+        }
+        .tab-btn {
+            background: transparent; border: none;
+            color: var(--text-muted); padding: 0.75rem 1.25rem;
+            font-family: inherit; font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; position: relative; transition: color 0.2s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 2px; background: var(--accent); border-radius: 2px 2px 0 0;
+            box-shadow: 0 -2px 8px var(--accent-glow);
+        }
+        .tab-content { display: none; margin-top: 1.5rem; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        pre {
+            background: #0d0f14; border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 1.5rem; font-size: 0.85rem; overflow-x: auto; color: #a5b4fc;
             max-height: 400px;
             overflow-y: auto;
         }
 
-        .tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: -1px;
-            position: relative;
-            z-index: 1;
-        }
-        .tab-btn {
-            padding: .55rem 1.1rem;
-            background: transparent;
-            border: 1px solid transparent;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            color: var(--text-muted);
-            font-family: inherit;
-            font-size: .8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background .15s, color .15s;
-        }
-        .tab-btn:hover { color: var(--text); }
-        .tab-btn.active {
-            background: var(--surface-2);
-            color: var(--accent);
-            border-color: var(--border);
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* ── Error Box ────────────────────────── */
-        .error-box {
-            background: rgba(248,113,113,.08);
-            border: 1px solid rgba(248,113,113,.25);
-            border-radius: 8px;
-            padding: .85rem 1rem;
-            color: var(--red);
-            font-size: .85rem;
-            margin-bottom: 1rem;
-        }
-
         /* ── Footer ───────────────────────────── */
         footer {
-            text-align: center;
-            margin-top: 3rem;
-            color: var(--text-muted);
-            font-size: .75rem;
+            text-align: center; margin-top: 4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 300;
         }
-        footer a { color: var(--accent); text-decoration: none; }
+        footer a { color: var(--accent); text-decoration: none; transition: text-shadow 0.2s; }
+        footer a:hover { text-shadow: 0 0 8px var(--accent-glow); }
+
+        /* ── Animations ───────────────────────── */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     </style>
 </head>
 <body>
@@ -237,34 +336,59 @@
 <div class="container">
 
     <header>
-        <h1>🤖 AI Test Automation Agent</h1>
-        <p>Enter a natural language test instruction — the agent will parse, generate Playwright code, and execute it.</p>
+        <h1>AI Test Automation Agent</h1>
+        <p>Intelligent, fully-autonomous browser testing using natural language.</p>
     </header>
 
-    <!-- Input -->
+    <!-- Input Section -->
     <div class="card">
         <div class="card-title">Test Instruction</div>
-        <textarea id="instruction" placeholder="e.g. Go to YouTube and search for lofi music&#10;e.g. Open localhost:5000/sample, type admin as username and password123 as password, click login"></textarea>
+        <textarea id="instruction" placeholder="e.g. Go to YouTube and search for lofi music&#10;e.g. Open localhost:5000/sample, type admin into username, type password123 into password, click login..."></textarea>
         <div class="btn-row">
-            <button class="btn btn-primary" id="btn-run" onclick="runTest()">▶ Run Test</button>
-            <button class="btn btn-secondary" id="btn-clear" onclick="clearAll()">Clear</button>
+            <button class="btn btn-primary" id="btn-run" onclick="runTest()">Execute Test Flow</button>
+            <button class="btn btn-secondary" id="btn-clear" onclick="clearAll()">Clear Setup</button>
         </div>
         <div class="loader-wrap" id="loader">
             <div class="spinner"></div>
-            <span>Executing test… this may take a moment</span>
+            <span>Executing automated test... browser is running</span>
         </div>
     </div>
 
-    <!-- Results -->
-    <div id="results">
+    <!-- Results Section -->
+    <div id="results-container">
         <div class="card">
-            <div class="card-title">Result</div>
-            <div id="status-badge"></div>
-            <div id="result-meta" class="result-meta"></div>
-            <div id="error-box" class="error-box" style="display:none"></div>
+            <div class="card-title">Execution Report</div>
+            
+            <div id="error-alert" class="step-error" style="display:none; margin-bottom:1.5rem;"></div>
 
+            <!-- Summary Stats -->
+            <div class="summary-stats" id="summary-banner" style="display:none;">
+                <div class="stat-box stat-total">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Steps</div>
+                </div>
+                <div class="stat-box stat-pass">
+                    <div class="stat-value" id="stat-passed">0</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat-box stat-fail">
+                    <div class="stat-value" id="stat-failed">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat-box stat-time">
+                    <div class="stat-value" id="stat-time">0.0s</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline" id="timeline">
+                <!-- Javascript will populate steps here -->
+            </div>
+
+            <!-- Raw Data Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('actions')">Parsed Actions</button>
+                <button class="tab-btn active" onclick="switchTab('actions')">Parsed JSON</button>
                 <button class="tab-btn" onclick="switchTab('code')">Generated Code</button>
             </div>
             <div id="tab-actions" class="tab-content active">
@@ -273,12 +397,12 @@
             <div id="tab-code" class="tab-content">
                 <pre id="pre-code"></pre>
             </div>
+
         </div>
     </div>
 
     <footer>
-        AI Test Automation Agent &middot; Powered by Gemini + LangGraph + Playwright &middot;
-        <a href="/sample">Sample Login Page</a>
+        LangGraph &middot; Playwright &middot; Gemini | <a href="/sample" target="_blank">Access Sample Target UI</a>
     </footer>
 
 </div>
@@ -286,15 +410,19 @@
 <script>
 function runTest() {
     const input = document.getElementById('instruction').value.trim();
-    if (!input) return alert('Please enter a test instruction.');
+    if (!input) return alert('Please enter a test instruction to begin.');
 
     const btn = document.getElementById('btn-run');
     const loader = document.getElementById('loader');
-    const results = document.getElementById('results');
-
+    const resultsContainer = document.getElementById('results-container');
+    
+    // Reset UI
     btn.disabled = true;
     loader.classList.add('active');
-    results.classList.remove('visible');
+    resultsContainer.classList.remove('visible');
+    document.getElementById('error-alert').style.display = 'none';
+    document.getElementById('summary-banner').style.display = 'none';
+    document.getElementById('timeline').innerHTML = '';
 
     const formData = new FormData();
     formData.append('user_input', input);
@@ -304,45 +432,71 @@ function runTest() {
     .then(data => {
         btn.disabled = false;
         loader.classList.remove('active');
+        resultsContainer.classList.add('visible');
 
         if (data.error) {
-            results.classList.add('visible');
-            document.getElementById('status-badge').innerHTML =
-                '<span class="status-badge fail"><span class="dot"></span>ERROR</span>';
-            document.getElementById('result-meta').innerHTML = '';
-            document.getElementById('error-box').style.display = 'block';
-            document.getElementById('error-box').textContent = data.error;
+            document.getElementById('error-alert').textContent = `System Error: ${data.error}`;
+            document.getElementById('error-alert').style.display = 'block';
             document.getElementById('pre-actions').textContent = '';
             document.getElementById('pre-code').textContent = '';
             return;
         }
 
-        results.classList.add('visible');
-        document.getElementById('error-box').style.display = 'none';
-
+        // Handle the structured execution result JSON
         const exec = data.execution_result || {};
-        const isPASS = exec.status === 'PASS';
+        const summary = exec.summary || {};
+        const steps = exec.steps || [];
 
-        document.getElementById('status-badge').innerHTML =
-            `<span class="status-badge ${isPASS ? 'pass' : 'fail'}">` +
-            `<span class="dot"></span>${exec.status || 'N/A'}</span>`;
+        // 1. Fill Summary
+        if (summary.total !== undefined) {
+            document.getElementById('summary-banner').style.display = 'grid';
+            document.getElementById('stat-total').textContent = summary.total;
+            document.getElementById('stat-passed').textContent = summary.passed;
+            document.getElementById('stat-failed').textContent = summary.failed;
+            document.getElementById('stat-time').textContent = summary.execution_time;
+        }
 
-        document.getElementById('result-meta').innerHTML =
-            `<strong>Steps executed:</strong> ${exec.steps_executed || 0}` +
-            (exec.error ? ` &middot; <strong>Error:</strong> ${exec.error}` : '');
+        // 2. Build Timeline Steps
+        const timeline = document.getElementById('timeline');
+        if (steps.length === 0) {
+            timeline.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem;">No actions were executed.</div>';
+        } else {
+            steps.forEach((step, index) => {
+                const isPass = step.status === 'pass';
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `step-item ${isPass ? 'pass' : 'fail'}`;
+                // Stagger animations
+                itemDiv.style.animationDelay = `${index * 0.15}s`;
 
-        document.getElementById('pre-actions').textContent =
-            JSON.stringify(data.parsed_actions || [], null, 2);
+                let errorHtml = '';
+                if (!isPass && step.details) {
+                    errorHtml = `<div class="step-error">${step.details}</div>`;
+                }
 
-        document.getElementById('pre-code').textContent =
-            data.generated_code || '(no code generated)';
+                itemDiv.innerHTML = `
+                    <div class="step-content">
+                        <div class="step-header">
+                            <span class="step-action">${step.action}</span>
+                            <span class="step-time">${step.execution_time}s</span>
+                        </div>
+                        ${errorHtml}
+                    </div>
+                `;
+                timeline.appendChild(itemDiv);
+            });
+        }
+
+        // 3. Fill Tabs
+        document.getElementById('pre-actions').textContent = JSON.stringify(data.parsed_actions || [], null, 2);
+        document.getElementById('pre-code').textContent = data.generated_code || '# No code generated';
 
         switchTab('actions');
     })
     .catch(err => {
         btn.disabled = false;
         loader.classList.remove('active');
-        alert('Request failed: ' + err.message);
+        alert('Network request failed: ' + err.message);
     });
 }
 
@@ -358,7 +512,8 @@ function switchTab(name) {
 
 function clearAll() {
     document.getElementById('instruction').value = '';
-    document.getElementById('results').classList.remove('visible');
+    document.getElementById('results-container').classList.remove('visible');
+    document.getElementById('instruction').focus();
 }
 </script>
 
