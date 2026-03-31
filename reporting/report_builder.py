@@ -24,8 +24,9 @@ class TestReport:
         self.steps = []
         self._start_time = None
         self._total_time = 0.0
+        self.final_screenshot = ""
     
-    def add_step(self, action: dict, status: str, details: str = "", execution_time: float = 0.0):
+    def add_step(self, action: dict, status: str, details: str = "", execution_time: float = 0.0, screenshot: str = ""):
         """
         Add a completed or failed step to the report.
         """
@@ -49,7 +50,8 @@ class TestReport:
             "raw_action": action,
             "status": status.lower(),
             "details": details,
-            "execution_time": round(execution_time, 2)
+            "execution_time": round(execution_time, 2),
+            "screenshot": screenshot
         })
         self._total_time += execution_time
         
@@ -72,5 +74,7 @@ class TestReport:
                 "passed": passed,
                 "failed": failed,
                 "execution_time": time_str
-            }
+            },
+            "final_screenshot": self.final_screenshot,
+            "screenshots": [s["screenshot"] for s in self.steps if s.get("screenshot")]
         }

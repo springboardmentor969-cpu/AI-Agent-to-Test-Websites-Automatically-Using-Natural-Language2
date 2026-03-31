@@ -315,6 +315,125 @@
             overflow-y: auto;
         }
 
+        /* ── Screenshot Thumbnails ────────────── */
+        .step-screenshot {
+            margin-top: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .step-screenshot:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent-glow);
+            transform: scale(1.02);
+        }
+        .step-screenshot img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: var(--radius-sm);
+        }
+        .step-screenshot .screenshot-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            color: var(--text);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Screenshots Gallery Tab ─────────── */
+        .screenshot-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .gallery-item {
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: rgba(15,17,23,0.5);
+        }
+        .gallery-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px var(--accent-glow);
+            transform: translateY(-3px);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .gallery-item .gallery-label {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gallery-item .gallery-label .gallery-step {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ── Lightbox Modal ───────────────────── */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            animation: fadeIn 0.25s ease;
+        }
+        .lightbox-overlay.active {
+            display: flex;
+        }
+        .lightbox-overlay img {
+            max-width: 92vw;
+            max-height: 88vh;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+            animation: slideUp 0.35s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
         /* ── Footer ───────────────────────────── */
         footer {
             text-align: center; margin-top: 4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 300;
@@ -388,10 +507,16 @@
 
             <!-- Raw Data Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('actions')">Parsed JSON</button>
+                <button class="tab-btn active" onclick="switchTab('screenshots')">📸 Screenshots</button>
+                <button class="tab-btn" onclick="switchTab('actions')">Parsed JSON</button>
                 <button class="tab-btn" onclick="switchTab('code')">Generated Code</button>
             </div>
-            <div id="tab-actions" class="tab-content active">
+            <div id="tab-screenshots" class="tab-content active">
+                <div class="screenshot-gallery" id="screenshot-gallery">
+                    <!-- JS will populate screenshot gallery here -->
+                </div>
+            </div>
+            <div id="tab-actions" class="tab-content">
                 <pre id="pre-actions"></pre>
             </div>
             <div id="tab-code" class="tab-content">
@@ -401,6 +526,12 @@
         </div>
     </div>
 
+    <!-- Lightbox Modal -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightbox-img" src="" alt="Screenshot">
+    </div>
+
     <footer>
         LangGraph &middot; Playwright &middot; Gemini | <a href="/sample" target="_blank">Access Sample Target UI</a>
     </footer>
@@ -408,6 +539,16 @@
 </div>
 
 <script>
+function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+}
+// Close lightbox on Escape key
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
 function runTest() {
     const input = document.getElementById('instruction').value.trim();
     if (!input) return alert('Please enter a test instruction to begin.');
@@ -423,6 +564,7 @@ function runTest() {
     document.getElementById('error-alert').style.display = 'none';
     document.getElementById('summary-banner').style.display = 'none';
     document.getElementById('timeline').innerHTML = '';
+    document.getElementById('screenshot-gallery').innerHTML = '';
 
     const formData = new FormData();
     formData.append('user_input', input);
@@ -456,8 +598,10 @@ function runTest() {
             document.getElementById('stat-time').textContent = summary.execution_time;
         }
 
-        // 2. Build Timeline Steps
+        // 2. Build Timeline Steps (with screenshot thumbnails)
         const timeline = document.getElementById('timeline');
+        const gallery = document.getElementById('screenshot-gallery');
+
         if (steps.length === 0) {
             timeline.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem;">No actions were executed.</div>';
         } else {
@@ -466,7 +610,6 @@ function runTest() {
                 
                 const itemDiv = document.createElement('div');
                 itemDiv.className = `step-item ${isPass ? 'pass' : 'fail'}`;
-                // Stagger animations
                 itemDiv.style.animationDelay = `${index * 0.15}s`;
 
                 let errorHtml = '';
@@ -484,14 +627,50 @@ function runTest() {
                     </div>
                 `;
                 timeline.appendChild(itemDiv);
+
+                // Also add to the gallery tab
+                if (step.screenshot) {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.onclick = () => openLightbox(step.screenshot);
+                    galleryItem.innerHTML = `
+                        <img src="${step.screenshot}" alt="Step ${index + 1}" loading="lazy">
+                        <div class="gallery-label">
+                            <span class="gallery-step">Step ${index + 1}</span>
+                            <span>${step.action.split(' ')[0]}</span>
+                        </div>
+                    `;
+                    gallery.appendChild(galleryItem);
+                }
             });
         }
 
-        // 3. Fill Tabs
+        // 3. Add final screenshot to gallery if available
+        const finalScreenshot = exec.final_screenshot;
+        if (finalScreenshot) {
+            const finalItem = document.createElement('div');
+            finalItem.className = 'gallery-item';
+            finalItem.onclick = () => openLightbox(finalScreenshot);
+            finalItem.innerHTML = `
+                <img src="${finalScreenshot}" alt="Final State" loading="lazy">
+                <div class="gallery-label">
+                    <span class="gallery-step">Final State</span>
+                    <span>🏁 End Result</span>
+                </div>
+            `;
+            gallery.appendChild(finalItem);
+        }
+
+        // 4. If no screenshots at all, show message
+        if (gallery.children.length === 0) {
+            gallery.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem; grid-column: 1/-1;">No screenshots were captured during this test run.</div>';
+        }
+
+        // 5. Fill Tabs
         document.getElementById('pre-actions').textContent = JSON.stringify(data.parsed_actions || [], null, 2);
         document.getElementById('pre-code').textContent = data.generated_code || '# No code generated';
 
-        switchTab('actions');
+        switchTab('screenshots');
     })
     .catch(err => {
         btn.disabled = false;
@@ -505,7 +684,6 @@ function switchTab(name) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     
-    // Add active class to corresponding tab button
     const activeBtn = document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`);
     if (activeBtn) activeBtn.classList.add('active');
 }

@@ -12,9 +12,13 @@ Routes:
 from flask import Flask, request, jsonify, render_template
 from workflow.langgraph_flow import build_graph
 from milestone3.main import run_test
+import os
 
 app = Flask(__name__)
 graph = build_graph()
+
+# Ensure screenshots directory exists
+os.makedirs(os.path.join(app.static_folder, "screenshots"), exist_ok=True)
 
 
 # ─── Main UI ─────────────────────────────────────────────────────────────────

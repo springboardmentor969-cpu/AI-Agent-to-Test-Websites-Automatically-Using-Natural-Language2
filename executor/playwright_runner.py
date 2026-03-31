@@ -11,8 +11,33 @@ Features:
 
 import time
 import re
+import os
+import glob
 from playwright.sync_api import sync_playwright, expect
 from reporting.report_builder import TestReport
+
+# ─── Screenshot directory ────────────────────────────────────────────────────
+SCREENSHOT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "screenshots")
+
+def _ensure_screenshot_dir():
+    """Create screenshots directory and clear old screenshots."""
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+    for f in glob.glob(os.path.join(SCREENSHOT_DIR, "*.png")):
+        try:
+            os.remove(f)
+        except OSError:
+            pass
+
+def _take_screenshot(page, step_index: int, action_type: str) -> str:
+    """Take a screenshot and return the URL path for the frontend."""
+    try:
+        filename = f"step_{step_index}_{action_type}_{int(time.time() * 1000)}.png"
+        filepath = os.path.join(SCREENSHOT_DIR, filename)
+        page.screenshot(path=filepath, full_page=False)
+        return f"/static/screenshots/{filename}"
+    except Exception as e:
+        print(f"[Screenshot] Failed to capture: {e}")
+        return ""
 
 # ─── YouTube helpers ─────────────────────────────────────────────────────────
 YOUTUBE_DOMAINS = ("youtube.com", "youtu.be")
@@ -171,12 +196,16 @@ _EXECUTORS = {
 def execute_actions(actions: list[dict], headless: bool = True) -> dict:
     """
     Execute a list of structured actions and return a detailed JSON report.
+    Captures a browser screenshot after every action step.
     """
     is_youtube = _detect_headed_mode(actions)
     if is_youtube:
         headless = False
 
     slow_mo = 100 if is_youtube else 20
+
+    # Prepare screenshot directory (clear old screenshots)
+    _ensure_screenshot_dir()
     
     report = TestReport("Automated LangGraph Browser Test")
 
@@ -193,7 +222,7 @@ def execute_actions(actions: list[dict], headless: bool = True) -> dict:
         page = context.new_page()
 
         try:
-            for action in actions:
+            for idx, action in enumerate(actions, start=1):
                 action_type = str(action.get("type", "")).lower()
                 executor = _EXECUTORS.get(action_type)
 
@@ -201,36 +230,49 @@ def execute_actions(actions: list[dict], headless: bool = True) -> dict:
 
                 if executor is None:
                     step_duration = time.time() - step_start_time
+                    screenshot_url = _take_screenshot(page, idx, "unknown")
                     report.add_step(
                         action=action, 
                         status="fail", 
                         details=f"Unknown action type '{action_type}'", 
-                        execution_time=step_duration
+                        execution_time=step_duration,
+                        screenshot=screenshot_url
                     )
-                    break # Stop execution on unknown action
+                    break
 
                 try:
                     executor(page, action, is_youtube)
                     step_duration = time.time() - step_start_time
+                    screenshot_url = _take_screenshot(page, idx, action_type)
                     report.add_step(
                         action=action, 
                         status="pass", 
-                        execution_time=step_duration
+                        execution_time=step_duration,
+                        screenshot=screenshot_url
                     )
                 except Exception as e:
                     step_duration = time.time() - step_start_time
+                    screenshot_url = _take_screenshot(page, idx, action_type)
                     report.add_step(
                         action=action, 
                         status="fail", 
                         details=str(e), 
-                        execution_time=step_duration
+                        execution_time=step_duration,
+                        screenshot=screenshot_url
                     )
-                    break # Stop execution on first failure
+                    break
 
         finally:
+            # Capture final state screenshot
+            try:
+                final_url = _take_screenshot(page, 0, "final_state")
+                if final_url:
+                    report.final_screenshot = final_url
+            except Exception:
+                pass
+
             if not headless:
                 try:
-                    # Brief pause to show the final state
                     page.wait_for_timeout(2000)
                 except Exception:
                     pass
