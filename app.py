@@ -1,27 +1,47 @@
 from flask import Flask, render_template, request
-from agent import app as agent_app
+from agent.workflow import create_workflow
 
 app = Flask(__name__)
 
-# show page
+# Initialize workflow
+workflow = create_workflow()
 
 
+# ---------------- HOME PAGE ----------------
 @app.route("/")
-def home():
+def index():
     return render_template("index.html")
 
-# handle form submit
 
-
+# ---------------- RUN AUTOMATION ----------------
 @app.route("/run", methods=["POST"])
-def run_agent():
+def run():
+
     instruction = request.form.get("instruction")
 
-    # send instruction to LangGraph agent
-    agent_app.invoke({"input": instruction})
+    if not instruction:
+        return "No instruction provided"
 
-    return "Instruction processed: " + instruction
+    try:
+        result = workflow(instruction)
+
+        # Safe extraction
+        report = result.get("report", {})
+        execution_status = result.get("execution_status", "Unknown")
+
+        return render_template(
+            "test.html",
+            input_text=result.get("instruction", ""),
+            parsed_actions=result.get("parsed_actions", []),
+            generated_code=result.get("generated_code", []),
+            execution_status=execution_status,
+            report=report
+        )
+
+    except Exception as e:
+        return f"Error occurred: {str(e)}"
 
 
+# ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
     app.run(debug=True)

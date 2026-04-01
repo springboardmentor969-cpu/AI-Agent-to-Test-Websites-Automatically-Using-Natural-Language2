@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Automation Test Report</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-card {
+            border-left: 5px solid #007bff;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .step-card:hover {
+            background: #f9f9f9;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .failed {
+            color: red;
+            font-weight: bold;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Automation Test Report</h1>
+
+        <!-- Instruction -->
+        <div class="card">
+            <h2>Input Instruction</h2>
+            <p>{{ input_text }}</p>
+        </div>
+
+        <!-- Parsed Actions -->
+        <div class="card">
+            <h2>Parsed Actions</h2>
+            <pre>{{ parsed_actions }}</pre>
+        </div>
+
+        <!-- Generated Code -->
+        <div class="card">
+            <h2>Generated Code (Grouped)</h2>
+            <pre>
+{% for step in generated_code %}
+Action: {{ step.action }}
+{{ step.code }}
+
+{% endfor %}
+        </pre>
+        </div>
+
+        <!-- Execution Status -->
+        <div class="card">
+            <h2>Execution Status</h2>
+
+            {% if execution_status == "Success" %}
+            <p class="success">✔ Success</p>
+            {% else %}
+            <p class="failed">✖ Failed</p>
+            {% endif %}
+        </div>
+
+        <!-- Screenshot -->
+        <div class="card">
+            <h2>Execution Screenshot</h2>
+            <img src="/static/execution_result.png" alt="Execution Screenshot">
+        </div>
+
+        <!-- REPORT -->
+        <div class="card">
+            <h2>Execution Report</h2>
+
+            <p><span class="label">Status:</span> {{ report.status }}</p>
+            <p><span class="label">Total Steps:</span> {{ report.total_steps }}</p>
+            <p><span class="label">Execution Time:</span> {{ report.execution_time }} seconds</p>
+
+            {% if report.error %}
+            <p class="failed"><span class="label">Error:</span> {{ report.error }}</p>
+            {% endif %}
+
+            <h3>Execution Steps</h3>
+
+            {% for step in report.steps_log %}
+            <div class="step-card">
+
+                <p>
+                    <strong>Step {{ step.step }}:</strong>
+                    <strong>{{ step.action }}</strong> →
+                    {% if step.status == "Success" %}
+                    <span class="success">Success</span>
+                    {% else %}
+                    <span class="failed">Failed</span>
+                    {% endif %}
+                </p>
+
+                <p><span class="label">Details:</span> {{ step.details }}</p>
+
+                <details>
+                    <summary>View Code</summary>
+                    <pre>{{ step.code }}</pre>
+                </details>
+
+                {% if step.error %}
+                <p class="failed"><span class="label">Error:</span> {{ step.error }}</p>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <!-- Back Button -->
+        <div style="text-align:center;">
+            <a href="/" class="btn">Run Another Test</a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
