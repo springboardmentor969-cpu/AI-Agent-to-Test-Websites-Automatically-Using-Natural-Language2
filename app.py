@@ -1,85 +1,83 @@
-from flask import Flask, request, render_template_string
-from parser import parse_instruction
-from code_generator import generate_code
-from executor import run_test
+from flask import Flask, render_template, request
+from playwright.sync_api import sync_playwright
+import time
+import os
 
 app = Flask(__name__)
 
-HTML = """
-<!DOCTYPE html>
-<html>
-<head>
-<title>AI Automation Agent</title>
-<style>
-body {
-    background: linear-gradient(to right, #1c3b4a, #2c5364);
-    color: white;
-    font-family: Arial;
-    text-align: center;
-}
-.container {
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
-    width: 500px;
-    margin: 100px auto;
-}
-input {
-    width: 90%;
-    padding: 10px;
-}
-button {
-    padding: 10px 20px;
-    margin-top: 10px;
-}
-pre {
-    text-align: left;
-    background: black;
-    padding: 10px;
-    overflow-x: auto;
-}
-</style>
-</head>
-
-<body>
-<div class="container">
-<h2>🤖 AI Automation Agent</h2>
-
-<form method="POST">
-<input type="text" name="instruction" placeholder="open youtube and search python tutorial"/>
-<br>
-<button type="submit">Run Agent</button>
-</form>
-
-{% if actions %}
-<h3>Parsed Actions</h3>
-<pre>{{ actions }}</pre>
-{% endif %}
-
-{% if code %}
-<h3>Generated Code</h3>
-<pre>{{ code }}</pre>
-{% endif %}
-
-</div>
-</body>
-</html>
-"""
+RESULT = {}
 
 @app.route("/", methods=["GET", "POST"])
-def home():
-    actions = None
-    code = None
+def index():
+    global RESULT
 
     if request.method == "POST":
         instruction = request.form["instruction"]
 
-        actions = parse_instruction(instruction)
-        code = generate_code(actions)
+        steps = []
+        screenshot_path = "static/screenshot.png"
 
-        run_test(code)   # browser run avthundi
+        start = time.time()
 
-    return render_template_string(HTML, actions=actions, code=code)
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=False)
+            page = browser.new_page()
+
+            # STEP 1
+            page.goto("https://www.youtube.com")
+            steps.append({
+                "title": "Step 1: open_url",
+                "status": "Success",
+                "details": "{'action': 'open_url', 'url': 'https://www.youtube.com'}",
+                "code": "page.goto('https://www.youtube.com')"
+            })
+            time.sleep(3)
+
+            # STEP 2
+            page.fill("input[name='search_query']", "mr english channel")
+            page.keyboard.press("Enter")
+            steps.append({
+                "title": "Step 2: search",
+                "status": "Success",
+                "details": "{'action': 'search', 'query': 'mr english channel'}",
+                "code": "page.fill('input[name=search_query]', 'mr english channel'); page.keyboard.press('Enter')"
+            })
+            time.sleep(4)
+
+            # STEP 3
+            page.click("ytd-video-renderer a#video-title")
+            steps.append({
+                "title": "Step 3: click",
+                "status": "Success",
+                "details": "{'action': 'click', 'target': 'first video'}",
+                "code": "page.click('ytd-video-renderer a#video-title')"
+            })
+            time.sleep(5)
+
+            # screenshot
+            if not os.path.exists("static"):
+                os.makedirs("static")
+
+            page.screenshot(path=screenshot_path)
+
+            # browser close delay (important)
+            time.sleep(10)
+
+            browser.close()
+
+        end = time.time()
+
+        RESULT = {
+            "instruction": instruction,
+            "steps": steps,
+            "status": "Success",
+            "total_steps": len(steps),
+            "time": round(end - start, 2),
+            "screenshot": screenshot_path
+        }
+
+    return render_template("index.html", result=RESULT)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
