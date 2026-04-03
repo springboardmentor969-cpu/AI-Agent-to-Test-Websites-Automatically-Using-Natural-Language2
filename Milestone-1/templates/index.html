@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>AI Test Automation-Milestone 1</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f9;
+text-align:center;
+padding:40px;
+}
+
+h1{
+color:#333;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:10px;
+width:70%;
+margin:auto;
+box-shadow:0px 4px 10px rgba(0,0,0,0.1);
+}
+
+input{
+width:60%;
+padding:12px;
+font-size:16px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+padding:12px 25px;
+font-size:16px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin-left:10px;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+pre{
+margin-top:30px;
+background:#1e1e1e;
+color:#00ff9c;
+text-align:left;
+padding:20px;
+border-radius:8px;
+overflow:auto;
+font-size:14px;
+line-height:1.6;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI Test Automation-Milestone 1</h1>
+
+<p>Enter your automation instruction</p>
+
+<input type="text" id="userInput" placeholder="Example: search python tutorial">
+
+<button onclick="runAgent()">Generate Code</button>
+
+<pre id="output"></pre>
+
+</div>
+
+<script>
+
+function runAgent(){
+
+const input = document.getElementById("userInput").value
+
+fetch("/run",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({user_input:input})
+})
+
+.then(response => response.json())
+
+.then(data => {
+
+document.getElementById("output").innerText = data.response
+
+})
+
+}
+
+</script>
+
+</body>
+
+</html>
