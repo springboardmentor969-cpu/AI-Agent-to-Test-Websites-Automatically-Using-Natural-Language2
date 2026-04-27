@@ -1,0 +1,178 @@
+# 🤖 AI Agent to Test Websites Automatically Using Natural Language
+
+An intelligent AI-powered end-to-end (E2E) web testing agent that accepts **natural language test instructions**, interprets them using **LangGraph**, auto-generates **Playwright test scripts**, executes them in a headless browser, and produces **detailed test reports** — no manual test code required.
+
+---
+
+## 🎯 Objective
+
+To implement an intelligent agent capable of performing automated end-to-end testing on web applications by bridging the gap between human-readable instructions and executable browser automation scripts.
+
+---
+
+## 🚀 Features
+
+- 📝 **Natural Language Input** — Write test cases in plain English
+- 🧠 **LangGraph Agent Orchestration** — Manages the full test workflow pipeline
+- ⚙️ **Auto Playwright Script Generation** — Converts instructions to executable scripts
+- ✅ **Dynamic Assertion Generation** — Automatically validates expected outcomes
+- 🌐 **Headless Browser Execution** — Runs tests without opening a visible browser
+- 🔄 **Adaptive DOM Mapping** — Adjusts dynamically to web structure changes
+- 📊 **Detailed Test Reports** — Pass/fail summaries with execution details
+- 🖥️ **Flask Web Interface** — Clean UI to input tests and view results
+
+---
+
+## 🔄 System Architecture & Workflow
+
+```
+start
+  ↓
+convert_user_instruction_to_actions
+  ↓
+get_initial_action
+  ↓
+get_website_state
+  ↓
+generate_code_for_action  ←─────────┐
+  ↓                                  │
+validate_generated_action ───────────┘ (retry loop)
+  ↓                    ↓
+post_process_script   handle_generation_error
+  ↓                         ↓
+execute_test_case           end
+  ↓
+generate_test_report
+  ↓
+end
+```
+
+---
+
+## 🧩 Modules
+
+| Module | Description |
+|--------|-------------|
+| **Instruction Parser** | Interprets natural language test descriptions and maps them to browser actions |
+| **Code Generation** | Converts parsed actions into executable Playwright Python scripts |
+| **Execution** | Runs tests headlessly and captures runtime logs |
+| **Assertion & Reporting** | Validates expected results and compiles human-readable test summaries |
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Language | Python 3.x |
+| Agent Framework | LangGraph |
+| Browser Automation | Playwright (Python) |
+| Web Framework | Flask |
+| LLM Toolkit | LangChain Community (PlaywrightBrowserToolkit) |
+| UI (optional) | Streamlit / Gradio |
+| Frontend | HTML, CSS, JavaScript |
+
+---
+
+## 📁 Project Structure
+
+```
+├── Milestone-1/        # Week 1–2: Environment setup, Flask server, LangGraph config
+├── Milestone-2/        # Week 3–4: Instruction Parser, LangGraph workflow
+├── Milestone-3/        # Week 5–6: Playwright Code Generation, assertion & execution
+├── Milestone-4/        # Week 7–8: Reporting, error handling, final UI & docs
+├── agent.py            # Core LangGraph agent logic
+├── api_config.py       # LLM API configuration
+├── app.py              # Flask web application entry point
+├── executor.py         # Playwright script executor
+├── parser.py           # Natural language to action parser
+├── report.py           # Test report generator
+├── requirements.txt    # Python dependencies
+├── static/             # CSS, JS, assets
+├── templates/          # HTML templates
+└── README.md
+```
+
+---
+
+## 📌 Milestones
+
+| Milestone | Weeks | What Was Built |
+|-----------|-------|---------------|
+| **Milestone 1** | Week 1–2 | Python env setup, Flask server, LangGraph baseline agent config |
+| **Milestone 2** | Week 3–4 | Instruction Parser, structured command mapping, LangGraph workflow |
+| **Milestone 3** | Week 5–6 | Playwright code generation, assertion generator, headless execution |
+| **Milestone 4** | Week 7–8 | Reporting module, error handling, polished UI, final E2E integration |
+
+---
+
+## ⚙️ Setup & Installation
+
+### Prerequisites
+- Python 3.x
+- Node.js (required by Playwright)
+- LLM API Key (OpenAI / Gemini)
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/springboardmentor969-cpu/AI-Agent-to-Test-Websites-Automatically-Using-Natural-Language2.git
+cd AI-Agent-to-Test-Websites-Automatically-Using-Natural-Language2
+```
+
+### Step 2: Install Python Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Install Playwright Browsers
+```bash
+playwright install
+```
+
+### Step 4: Configure Environment Variables
+Create a `.env` file in the root directory:
+```
+API_KEY=your_llm_api_key_here
+```
+> ⚠️ Never share your API key. Each user must provide their own key.
+
+### Step 5: Run the Application
+```bash
+python app.py
+```
+Visit `http://localhost:5000` in your browser.
+
+---
+
+## 🧪 How to Use
+
+1. Open the web app at `http://localhost:5000`
+2. Enter your test instruction in natural language, for example:
+   > *"Go to google.com, search for Playwright testing, and verify the results page loads"*
+3. Click **Run Test**
+4. The agent will:
+   - Parse your instruction → generate Playwright script → execute in headless browser → return report
+
+---
+
+## 👩‍💻 Author
+
+**Bhoomika M**
+- 🎓 3rd Year CS Student | Infosys Springboard AI & ML Intern
+- 🔗 [GitHub Profile](https://github.com/Bhoomika-M)
+- 🔗 [LinkedIn Profile](https://linkedin.com/in/bhoomika-m)
+
+---
+
+## 📄 License
+
+This project is licensed under the terms of the [LICENSE](LICENSE) file in this repository.
+
+---
+
+## 🙏 Acknowledgements
+
+- **Infosys Springboard** for the internship opportunity and mentorship
+- **LangGraph & LangChain** for agent orchestration capabilities
+- **Microsoft Playwright** for robust browser automation
+-
