@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results - AI Website Testing Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .instruction {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .steps {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .code {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .output {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Instructions</a>
+        <h1>Test Results</h1>
+        
+        <div class="section">
+            <h2>Original Instruction</h2>
+            <div class="instruction">{{ instruction }}</div>
+        </div>
+        
+        <div class="section">
+            <h2>Parsed Steps</h2>
+            <div class="steps">
+                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 0; white-space: pre-wrap;">{{ steps }}</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Generated Playwright Code</h2>
+            <div class="code">{{ code }}</div>
+        </div>
+        
+        <div class="section {% if actual_status == 'pass' %}success{% elif actual_status == 'fail' %}error{% endif %}">
+            <h2>Actual Execution Result</h2>
+
+            {% if actual_status == "pass" %}
+                <h3 style="color:green;">✅ Test Passed</h3>
+            {% elif actual_status == "fail" %}
+                <h3 style="color:red;">❌ Test Failed</h3>
+            {% else %}
+                <h3 style="color:orange;">⚠️ Error Occurred</h3>
+            {% endif %}
+
+            <div class="output">
+                {{ actual_output }}
+            </div>
+        </div>
+
+        <div class="section {% if expected_status == 'pass' %}success{% elif expected_status == 'fail' %}error{% endif %}">
+            <h2>Expected Result</h2>
+
+            {% if expected_status == "pass" %}
+                <h3 style="color:green;">✅ Test Passed</h3>
+            {% elif expected_status == "fail" %}
+                <h3 style="color:red;">❌ Test Failed</h3>
+            {% endif %}
+
+            <div class="output">
+                {{ expected_output }}
+            </div>
+        </div>
+
+        <button onclick="resetForm()" style="margin-top: 20px;">Try Another Instruction</button>
+    </div>
+
+    <script>
+        function resetForm() {
+            window.location.href = "/";
+        }
+    </script>
+</body>
+</html>

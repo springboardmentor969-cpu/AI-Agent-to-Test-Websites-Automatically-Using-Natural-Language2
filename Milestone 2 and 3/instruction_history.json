@@ -1,0 +1,248 @@
+[
+  {
+    "timestamp": "2025-03-21 19:46:00",
+    "instruction": "Open youtube.com and search python tutorials",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 19:51:18",
+    "instruction": "Open youtube.com and search bollywood movies",
+    "actual_status": "error",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 19:58:17",
+    "instruction": "Open google.com and type AI and get me the results\r\n",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 20:12:14",
+    "instruction": "Open google.com and type AI",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 20:15:42",
+    "instruction": "Open google.com and type AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 20:20:43",
+    "instruction": "Open youtube.com and type dsa videos",
+    "actual_status": "error",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 20:22:03",
+    "instruction": "Open google.com",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-21 20:27:17",
+    "instruction": "Open invalid.com",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-21 20:27:55",
+    "instruction": "Open invalid.com",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-23 12:35:13",
+    "instruction": "Open google.com",
+    "actual_status": "error",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 16:56:54",
+    "instruction": "Open google.com and search hello",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 16:59:13",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:10:44",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:15:21",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:21:47",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:28:59",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:30:42",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:32:25",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 17:35:13",
+    "instruction": "Open invalid.com and search IIT madras",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-23 18:14:25",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 19:42:12",
+    "instruction": "Open google.com and search about AI",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-23 19:43:38",
+    "instruction": "Open invalid.com and get me some dsa quiz",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 18:55:46",
+    "instruction": "Open youtube.com\r\n",
+    "actual_status": "fail",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-30 20:27:21",
+    "instruction": "Open youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 20:40:07",
+    "instruction": "Open Youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 21:14:14",
+    "instruction": "Open youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:04:05",
+    "instruction": "Open google and type AI",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:09:25",
+    "instruction": "Open google.com and search for nptel courses",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-30 23:10:43",
+    "instruction": "Open youtube and search sad songs",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:14:22",
+    "instruction": "Open youtube and search sad songs",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:29:02",
+    "instruction": "Open youtube and search sad songs",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:31:55",
+    "instruction": "Open youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:43:03",
+    "instruction": "Open google and search nptel courses",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:47:19",
+    "instruction": "Open google and search AI",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:49:02",
+    "instruction": "Open google and search AI\r\n",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-30 23:52:19",
+    "instruction": "Open google.com and search AI",
+    "actual_status": "pass",
+    "expected_status": "pass"
+  },
+  {
+    "timestamp": "2026-03-30 23:53:04",
+    "instruction": "Open youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-31 17:14:24",
+    "instruction": "Open youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-31 17:27:08",
+    "instruction": "Open youtube and search music",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-31 17:44:04",
+    "instruction": "Open youtube and search music\r\n",
+    "actual_status": "error",
+    "expected_status": "fail"
+  },
+  {
+    "timestamp": "2026-03-31 17:46:23",
+    "instruction": "Open youtube and search music\r\n",
+    "actual_status": "error",
+    "expected_status": "fail"
+  }
+]

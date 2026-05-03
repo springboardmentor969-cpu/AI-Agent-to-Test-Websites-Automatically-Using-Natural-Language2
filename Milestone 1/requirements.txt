@@ -1,0 +1,77 @@
+
+'''from dotenv import load_dotenv
+load_dotenv()
+
+import google.generativeai as genai
+import os
+
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+from langgraph.graph import StateGraph, END
+from typing import TypedDict
+
+#Agent State:
+
+class AgentState(TypedDict):
+    input: str
+    output: str
+
+def agent_node(state: AgentState):
+    user_input = state["input"]
+
+    prompt = f"""Answer in fewer points.
+    Keep the answer it concised and structured format.
+    Question: {user_input}
+    """
+
+    model = genai.GenerativeModel("models/gemini-1.5-flash")
+    response = model.generate_content(prompt)
+
+    return {"output": response.text}
+
+
+#Code Generation Node:
+
+def agent_node(state: AgentState):
+    user_input = state["input"]
+
+    prompt = f"""
+    You are a Playwright automation expert.
+
+    Convert the user's instruction into valid Playwright Python code.
+
+    IMPORTANT:
+- Do NOT include imports
+- Do NOT include sync_playwright block
+- Do NOT use page.goto()
+- Assume page object already exists
+- Only return valid Python code
+- No explanation text
+- No markdown formatting
+
+
+Instruction:
+{user_input}
+    """
+
+    model = genai.GenerativeModel("models/gemini-2.5-flash")
+    response = model.generate_content(prompt)
+    generated_code = response.text.strip()
+
+    return {"output": generated_code}
+
+#LangGraph Setup:
+
+builder = StateGraph(AgentState)
+builder.add_node("agent", agent_node)
+builder.set_entry_point("agent")
+builder.add_edge("agent", END)
+
+graph = builder.compile()
+
+#Standalone Test:
+
+if __name__ == "__main__":
+    result = graph.invoke({"input": "Search dsa quiz links"})
+    print(result["output"])
+'''    

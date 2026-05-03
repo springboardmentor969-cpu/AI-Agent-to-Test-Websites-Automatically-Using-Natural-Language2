@@ -1,0 +1,59 @@
+<!-- 
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Testing Page</title>
+    </head>
+    <body>
+        <h1>Testing Console</h1>
+        <form method="POST"> 
+        <input type="text" name="user_input" placeholder="Ask something..." required>
+        <button type="submit">Send</button>
+        </form>
+        <p id="message"></p>
+
+        {% if response %}
+            <h3>Response:</h3>
+            <pre style="white-space: pre-wrap;">{{ response }}</pre>
+        {% endif %}
+
+        
+    </body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Website Testing Agent</title>
+</head>
+<body>
+
+    <h1>AI Automation Console</h1>
+
+    <form method="POST">
+        <input type="text" name="user_input" 
+               placeholder="Enter automation instruction..." required>
+        <button type="submit">Run</button>
+    </form>
+
+    {% if user_input %}
+        <h3>Entered Instruction:</h3>
+        <p><strong>{{ user_input }}</strong></p>
+    {% endif %}
+
+
+    {% if generated_code %}
+        <h3>Generated Playwright Code:</h3>
+        <pre style="white-space: pre-wrap; background:#f4f4f4; padding:10px;">
+{{ generated_code }}
+        </pre>
+    {% endif %}
+
+    <!-- {% if status %}
+        <h3>Execution Status:</h3>
+        <p><strong>{{ status }}</strong></p>
+    {% endif %} -->
+
+</body>
+</html>

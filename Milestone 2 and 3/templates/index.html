@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website Testing Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .examples {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        .examples h3 {
+            margin-top: 0;
+        }
+        .example {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 5px;
+            display: none; /* Hide examples but keep for potential future use */
+        }
+        .history-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .history-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .history-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+        }
+        .history-item .instruction {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .history-item .timestamp {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .history-item .status {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .history-item .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .history-item .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .history-item .error {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Website Testing Agent</h1>
+        
+        <form action="/execute" method="post">
+            <div class="form-group">
+                <label for="instruction">Enter Testing Instruction:</label>
+                <textarea name="instruction" id="instruction" placeholder="e.g., Open google.com and search AI" required></textarea>
+            </div>
+            <button type="submit">Generate & Execute Test</button>
+        </form>
+        
+        <div class="history-section">
+            <h3>📋 Recent Instructions</h3>
+            <div id="recent-history">
+                <p>Loading recent instructions...</p>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/history" style="color: #007bff; text-decoration: none; font-weight: bold;">View Full History →</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load recent instructions
+        fetch('/history')
+            .then(response => response.text())
+            .then(html => {
+                // Extract history items from the history page
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const historyItems = doc.querySelectorAll('.history-item');
+                
+                const recentHistoryDiv = document.getElementById('recent-history');
+                
+                if (historyItems.length === 0) {
+                    recentHistoryDiv.innerHTML = '<p style="color: #666; text-align: center;">No instructions yet</p>';
+                } else {
+                    recentHistoryDiv.innerHTML = '';
+                    
+                    // Show only the 3 most recent
+                    for (let i = 0; i < Math.min(3, historyItems.length); i++) {
+                        const item = historyItems[i].cloneNode(true);
+                        recentHistoryDiv.appendChild(item);
+                    }
+                }
+            })
+            .catch(error => {
+                document.getElementById('recent-history').innerHTML = '<p style="color: #666; text-align: center;">Unable to load history</p>';
+            });
+    </script>
+</body>
+</html>
