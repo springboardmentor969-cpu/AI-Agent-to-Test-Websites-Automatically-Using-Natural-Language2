@@ -1,18 +1,451 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AI Website Tester</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website Testing Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #7c3aed);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .main-container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        .hero-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-section p {
+            font-size: 1.05rem;
+            opacity: 0.9;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 22px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+            overflow: hidden;
+        }
+
+        .input-panel {
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .label-title {
+            display: block;
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            outline: none;
+            resize: vertical;
+            font-size: 15px;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.92);
+            color: #0f172a;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        textarea:focus {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.22);
+        }
+
+        .button-row {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .btn {
+            border: none;
+            padding: 13px 22px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.45);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(124, 58, 237, 0.45);
+        }
+
+        .section {
+            margin-bottom: 22px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+        }
+
+        .section-header {
+            padding: 16px 22px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .status-header { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+        .parsed-header { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+        .detail-header { background: linear-gradient(135deg, #9333ea, #7e22ce); }
+        .code-header { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+        .logs-header { background: linear-gradient(135deg, #ea580c, #f97316); }
+        .report-header { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .section-body {
+            padding: 22px;
+            background: #ffffff;
+        }
+
+        .status-box {
+            padding: 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #eff6ff, #eef2ff);
+            border: 1px solid #c7d2fe;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 18px;
+            border-radius: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+        }
+
+        .report-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .report-card {
+            padding: 18px;
+            border-radius: 16px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .report-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            opacity: 0.95;
+        }
+
+        .report-card p {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .blue-card { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .green-card { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .red-card { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .violet-card { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+
+        .details-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 18px 0 12px;
+        }
+
+        .step-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 6px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .step-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        }
+
+        .success-step {
+            border-left-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .failed-step {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .parser-step {
+            border-left-color: #8b5cf6;
+            background: #faf5ff;
+        }
+
+        .step-item p {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .step-item p:last-child {
+            margin-bottom: 0;
+        }
+
+        .success {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .failed {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: rgba(255,255,255,0.85);
+            margin-top: 24px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .input-panel {
+                padding: 22px;
+            }
+
+            .section-body {
+                padding: 16px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="page-wrapper">
+        <div class="main-container">
 
-<h2>Enter Test Instruction</h2>
+            <div class="hero-section">
+                <h1>AI Agent to Test Websites Automatically</h1>
+                <p>
+                    Enter natural language instructions, generate Playwright automation steps,
+                    execute them on websites, and view a complete structured test report.
+                </p>
+            </div>
 
-<form method="POST">
-    <input type="text" name="instruction" placeholder="Enter instruction">
-    <button type="submit">Submit</button>
-</form>
+            <div class="card input-panel">
+                <form method="POST">
+                    <label class="label-title">Enter Natural Language Test Steps</label>
+                    <textarea name="instruction" placeholder="Example:
+Open google.com
+Search cats
+Click Images
+Verify cats">{{ instruction }}</textarea>
 
-<pre>{{ response }}</pre>
+                    <div class="button-row">
+                        <button type="submit" name="action" value="parse" class="btn btn-secondary">
+                            Parse Instruction
+                        </button>
+                        <button type="submit" name="action" value="run" class="btn btn-primary">
+                            Run Test
+                        </button>
+                    </div>
+                </form>
+            </div>
 
+            {% if result %}
+            <div class="section">
+                <div class="section-header status-header">Status</div>
+                <div class="section-body">
+                    <div class="status-box">{{ result }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if steps %}
+            <div class="section">
+                <div class="section-header detail-header">Parsed Step Details</div>
+                <div class="section-body">
+                    {% for step in steps %}
+                    <div class="step-item parser-step">
+                        <p><b>Step No:</b> {{ step.step_no }}</p>
+                        <p><b>Action:</b> {{ step.action }}</p>
+                        <p><b>Target:</b> {{ step.target }}</p>
+                        {% if step.value %}
+                        <p><b>Value:</b> {{ step.value }}</p>
+                        {% endif %}
+                        <p><b>Description:</b> {{ step.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if steps_json %}
+            <div class="section">
+                <div class="section-header parsed-header">Parsed Steps JSON</div>
+                <div class="section-body">
+                    <pre>{{ steps_json }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if code %}
+            <div class="section">
+                <div class="section-header code-header">Generated Playwright Code</div>
+                <div class="section-body">
+                    <pre>{{ code }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if logs %}
+            <div class="section">
+                <div class="section-header logs-header">Execution Logs</div>
+                <div class="section-body">
+                    <pre>{% for log in logs %}{{ log }}
+{% endfor %}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if report %}
+            <div class="section">
+                <div class="section-header report-header">Final Test Report</div>
+                <div class="section-body">
+
+                    <div class="report-top">
+                        <div class="report-card violet-card">
+                            <h3>Execution Time</h3>
+                            <p style="font-size: 1rem;">{{ report.execution_time }}</p>
+                        </div>
+
+                        <div class="report-card blue-card">
+                            <h3>Total Steps</h3>
+                            <p>{{ report.total_steps }}</p>
+                        </div>
+
+                        <div class="report-card green-card">
+                            <h3>Passed</h3>
+                            <p>{{ report.passed }}</p>
+                        </div>
+
+                        <div class="report-card red-card">
+                            <h3>Failed</h3>
+                            <p>{{ report.failed }}</p>
+                        </div>
+                    </div>
+
+                    <div class="details-title">Step Details</div>
+
+                    {% for item in report.details %}
+                    <div class="step-item {% if item.status == 'success' %}success-step{% else %}failed-step{% endif %}">
+                        <p><b>Step:</b> {{ item.step }}</p>
+                        <p>
+                            <b>Status:</b>
+                            {% if item.status == "success" %}
+                                <span class="success">SUCCESS</span>
+                            {% else %}
+                                <span class="failed">FAILED</span>
+                            {% endif %}
+                        </p>
+
+                        {% if item.message %}
+                        <p><b>Message:</b> {{ item.message }}</p>
+                        {% endif %}
+
+                        {% if item.error %}
+                        <p><b>Error:</b> <span class="failed">{{ item.error }}</span></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="footer-note">
+                Built with Flask + Playwright | Final UI
+            </div>
+        </div>
+    </div>
 </body>
 </html>
