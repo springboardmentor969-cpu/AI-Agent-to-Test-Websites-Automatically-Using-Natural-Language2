@@ -1,31 +1,50 @@
 from flask import Flask, render_template, request
-from parser import parse_test_steps
 import json
+from parser import parse_instruction
+from code_generator import generate_code
+from workflow import run_steps
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    response = ""
+    instruction = ""
+    steps = []
+    code = ""
+    logs = []
+    result = ""
+    report = None
+    steps_json = ""
 
     if request.method == "POST":
-        # Get user instruction from form
-        instruction = request.form.get("instruction")   
+        instruction = request.form.get("instruction", "").strip()
+        action = request.form.get("action", "")
+
         if instruction:
-            received_msg = f"Received Instruction: {instruction}"
-            #  Call AI Parser
-            steps = parse_test_steps(instruction)
+            steps = parse_instruction(instruction)
+            code = generate_code(steps)
+            steps_json = json.dumps(steps, indent=4)
 
-            # Print in terminal (for debugging)
-            print("Parsed Steps:", steps)
-
-            # Convert to pretty JSON for display
-            response = received_msg + "\n\nParsed Steps:\n" + json.dumps(steps, indent=2)
+            if not steps:
+                result = "Parser could not understand the instruction."
+            elif action == "parse":
+                result = "Instruction parsed successfully."
+            elif action == "run":
+                logs, report = run_steps(steps)
+                result = "Execution completed successfully."
         else:
-            response = "No instruction provided."
+            result = "Please enter an instruction."
 
-    return render_template("index.html", response=response)
-
+    return render_template(
+        "index.html",
+        instruction=instruction,
+        steps=steps,
+        steps_json=steps_json,
+        code=code,
+        logs=logs,
+        result=result,
+        report=report
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
