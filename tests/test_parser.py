@@ -30,6 +30,13 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(parsed.target_url, "https://www.youtube.com")
         self.assertEqual(parsed.actions[-1].target, "first_video")
 
+    def test_youtube_search_prompt_extracts_query(self):
+        parsed = parse_instruction_details("Open youtube, search for music, and click the first video")
+
+        self.assertEqual(parsed.target_name, "youtube")
+        self.assertEqual(parsed.search_query, "music")
+        self.assertTrue(any(action.action == "search" for action in parsed.actions))
+
 
 if __name__ == "__main__":
     unittest.main()

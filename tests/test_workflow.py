@@ -29,6 +29,16 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('raise RuntimeError("Could not find a clickable YouTube video on the page")', result["generated_code"])
         self.assertIn('print("Clicked first YouTube video")', result["generated_code"])
 
+    def test_workflow_generates_youtube_search_code(self):
+        result = run_workflow(
+            "Open youtube, search for music, and click the first video",
+            execute=False,
+        )
+
+        self.assertIn('search_box = page.locator(\'input[name="search_query"]\').first', result["generated_code"])
+        self.assertIn('search_box.fill("music")', result["generated_code"])
+        self.assertIn('search_box.press("Enter")', result["generated_code"])
+
 
 if __name__ == "__main__":
     unittest.main()

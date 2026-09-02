@@ -21,10 +21,23 @@ def _extract_value(text: str, field: str) -> str | None:
     return None
 
 
+def _extract_search_query(text: str) -> str | None:
+    patterns = [
+        r"search for\s+[\"']?([^\"'\n]+?)(?:\s+and\s+click|\s+then\s+click|$)",
+        r"search\s+[\"']?([^\"'\n]+?)(?:\s+and\s+click|\s+then\s+click|$)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip().strip(" ,.!?")
+    return None
+
+
 def parse_instruction_details(text: str) -> ParsedInstruction:
     lowered = text.lower()
     username = _extract_value(text, "username")
     password = _extract_value(text, "password")
+    search_query = _extract_search_query(text)
     explicit_url = re.search(r"https?://[^\s]+", text, re.IGNORECASE)
     expected_result = None
 
@@ -62,13 +75,20 @@ def parse_instruction_details(text: str) -> ParsedInstruction:
     elif "first video" in lowered:
         actions.append(ParsedAction(action="click", target="first_video"))
     elif "search" in lowered:
-        actions.append(ParsedAction(action="search", target="query"))
+        actions.append(ParsedAction(action="search", target="query", value=search_query))
+
+    if target_name == "youtube" and search_query:
+        if not any(action.action == "search" for action in actions):
+            actions.append(ParsedAction(action="search", target="query", value=search_query))
+        if "first video" in lowered and not any(action.target == "first_video" for action in actions):
+            actions.append(ParsedAction(action="click", target="first_video"))
 
     return ParsedInstruction(
         raw_input=text,
         target_name=target_name,
         target_url=target_url,
         target_type=target_type,
+        search_query=search_query,
         username=username,
         password=password,
         expected_result=expected_result,

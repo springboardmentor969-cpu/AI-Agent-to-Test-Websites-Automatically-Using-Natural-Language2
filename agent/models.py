@@ -18,6 +18,7 @@ class ParsedInstruction:
     target_name: str
     target_url: str
     target_type: str
+    search_query: str | None = None
     username: str | None = None
     password: str | None = None
     expected_result: str | None = None

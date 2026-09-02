@@ -1,6 +1,6 @@
 import json
 import os
-from textwrap import dedent
+from textwrap import dedent, indent
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -54,60 +54,80 @@ def generate_demo_login_code(parsed: ParsedInstruction) -> str:
 
 
 def generate_youtube_code(parsed: ParsedInstruction) -> str:
-    return dedent(
-        f"""
-        from playwright.sync_api import sync_playwright
+    lines = [
+        "from playwright.sync_api import sync_playwright",
+        "",
+        "with sync_playwright() as p:",
+        "    browser = p.chromium.launch(headless=False)",
+        "    page = browser.new_page()",
+        f"    page.goto({_python_string(parsed.target_url)}, wait_until=\"domcontentloaded\")",
+        "    page.wait_for_timeout(5000)",
+        "",
+        "    consent_buttons = [",
+        '        \'button:has-text("Accept all")\',',
+        '        \'button:has-text("I agree")\',',
+        '        \'button:has-text("Accept")\',',
+        "    ]",
+        "    for selector in consent_buttons:",
+        "        button = page.locator(selector).first",
+        "        if button.count() > 0:",
+        "            try:",
+        "                button.click(timeout=2000)",
+        "                page.wait_for_timeout(2000)",
+        "                break",
+        "            except Exception:",
+        "                pass",
+        "",
+    ]
 
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
-            page = browser.new_page()
-            page.goto({_python_string(parsed.target_url)}, wait_until="domcontentloaded")
-            page.wait_for_timeout(5000)
-
-            consent_buttons = [
-                'button:has-text("Accept all")',
-                'button:has-text("I agree")',
-                'button:has-text("Accept")',
+    if parsed.search_query:
+        lines.extend(
+            [
+                "    search_box = page.locator('input[name=\"search_query\"]').first",
+                "    if search_box.count() == 0:",
+                "        search_box = page.locator('input#search').first",
+                "    if search_box.count() == 0:",
+                '        raise RuntimeError("Could not find the YouTube search box")',
+                f"    search_box.fill({_python_string(parsed.search_query)})",
+                '    search_box.press("Enter")',
+                "    page.wait_for_timeout(4000)",
+                "",
             ]
-            for selector in consent_buttons:
-                button = page.locator(selector).first
-                if button.count() > 0:
-                    try:
-                        button.click(timeout=2000)
-                        page.wait_for_timeout(2000)
-                        break
-                    except Exception:
-                        pass
+        )
 
-            first_video = None
-            for selector in [
-                'a[href*="/watch?v="]:visible',
-                "a#video-title:visible",
-                "a#video-title-link:visible",
-                "ytd-rich-grid-media a#thumbnail:visible",
-            ]:
-                locator = page.locator(selector).first
-                if locator.count() > 0:
-                    first_video = locator
-                    break
+    lines.extend(
+        [
+            "    first_video = None",
+            "    for selector in [",
+            '        \'a[href*="/watch?v="]:visible\',',
+            '        "a#video-title:visible",',
+            '        "a#video-title-link:visible",',
+            '        "ytd-rich-grid-media a#thumbnail:visible",',
+            "    ]:",
+            "        locator = page.locator(selector).first",
+            "        if locator.count() > 0:",
+            "            first_video = locator",
+            "            break",
+            "",
+            "    if first_video is None:",
+            "        page.mouse.wheel(0, 1500)",
+            "        page.wait_for_timeout(2000)",
+            "        retry_locator = page.locator('a[href*=\"/watch?v=\"]:visible').first",
+            "        if retry_locator.count() > 0:",
+            "            first_video = retry_locator",
+            "",
+            "    if first_video is None:",
+            '        raise RuntimeError("Could not find a clickable YouTube video on the page")',
+            "",
+            "    first_video.scroll_into_view_if_needed(timeout=5000)",
+            "    first_video.click(timeout=10000)",
+            "    page.wait_for_timeout(3000)",
+            '    print("Clicked first YouTube video")',
+            "    browser.close()",
+        ]
+    )
 
-            if first_video is None:
-                page.mouse.wheel(0, 1500)
-                page.wait_for_timeout(2000)
-                retry_locator = page.locator('a[href*="/watch?v="]:visible').first
-                if retry_locator.count() > 0:
-                    first_video = retry_locator
-
-            if first_video is None:
-                raise RuntimeError("Could not find a clickable YouTube video on the page")
-
-            first_video.scroll_into_view_if_needed(timeout=5000)
-            first_video.click(timeout=10000)
-            page.wait_for_timeout(3000)
-            print("Clicked first YouTube video")
-            browser.close()
-        """
-    ).strip()
+    return "\n".join(lines)
 
 
 def _get_llm_client() -> OpenAI | None:
